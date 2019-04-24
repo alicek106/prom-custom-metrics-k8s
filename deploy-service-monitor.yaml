@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: alicek106-blog
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: blog-service-label
+    spec:
+      containers:
+      - name: flask-web-server
+        image: alicek106/flask-opencensus-example
+        ports:
+        - name: web-service
+          containerPort: 8080
+        - name: healthz-checker
+          containerPort: 8088
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: alicek106-blog
+  labels:
+    app: service-monitor-label
+spec:
+  selector:
+    app: blog-service-label # same to deployment selector
+  ports:
+  - name: web-service
+    port: 8080
+  - name: healthz-checker
+    port: 8088
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: blog-service-monitor
+spec:
+  selector:
+    matchLabels:
+      app: service-monitor-label # same with service label
+  endpoints:
+  - port: healthz-checker

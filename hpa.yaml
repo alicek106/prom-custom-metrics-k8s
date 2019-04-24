@@ -1,0 +1,17 @@
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: blog-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: alicek106-blog
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+  - type: Pods
+    pods:
+      metricName: alicek106_visitors_sum
+      targetAverageValue: 10

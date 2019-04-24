@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: alicek106-blog
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: blog-service-label
+    spec:
+      containers:
+      - name: flask-web-server
+        image: alicek106/flask-opencensus-example
+        ports:
+        - name: web-service
+          containerPort: 8080
+        - name: healthz-checker
+          containerPort: 8088
+        resources:
+          requests:
+            memory: "16Mi"
+            cpu: "64m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: alicek106-blog
+  labels:
+    app: service-monitor-label
+spec:
+  selector:
+    app: blog-service-label # same to deployment selector
+  ports:
+  - name: web-service
+    port: 8080
+  - name: healthz-checker
+    port: 8088
